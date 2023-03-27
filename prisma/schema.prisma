@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String      @default(uuid()) @id
+  email     String   @unique
+  password  String
+  name      String?
+  profile   Profile?
+  subscription Subscription?
+  preferences Preferences?
+  jobApplications JobApplication[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id        String      @default(uuid()) @id
+  bio       String?
+  user_id  String
+  user      User        @relation(fields: [userId], references: [id])
+  expriences Experience[]
+  educations Education[]
+  skills Skill[]
+  isAvailable Boolean @default(true)
+  photoUrl String?
+  phone String?
+  firstName String?
+  lastName  String?
+  coverLetter String?
+  resumeUrl String?
+  userId    String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Preferences {
+  id        String      @default(uuid()) @id
+  userId  String @unique
+  user      User        @relation(fields: [userId], references: [id])
+  minSalary Float?
+  maxSalary Float?
+  preferredRoles String[]
+  preferredLocations String[]
+  preferredSkills String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Experience {
+  id        String      @default(uuid()) @id
+  title     String?
+  company   String?
+  location  String?
+  startDate String?
+  endDate   String?
+  description String?
+  profile      Profile        @relation(fields: [profileId], references: [id])
+  profileId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Education {
+  id        String      @default(uuid()) @id
+  school    String?
+  degree    String?
+  fieldOfStudy String?
+  startDate String?
+  endDate   String?
+  description String?
+  profile      Profile        @relation(fields: [profileId], references: [id])
+  profileId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id        String      @default(uuid()) @id
+  name      String?
+  experienceLevel String?
+  profile      Profile        @relation(fields: [profileId], references: [id])
+  profileId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job {
+  id        String      @default(uuid()) @id
+  title     String?
+  description String?
+  location  String?
+  salary    String?
+  url       String?
+  sourceId  String @unique
+  source JobSource @relation(fields: [sourceId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+  jobApplications JobApplication[]
+  companyId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id        String      @default(uuid()) @id
+  name      String?
+  logoUrl   String?
+  website   String?
+  jobs      Job[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobApplication {
+  id        String      @default(uuid()) @id
+  user      User        @relation(fields: [userId], references: [id])
+  job      Job        @relation(fields: [jobId], references: [id])
+  userId    String
+  jobId    String
+  generatedCoverLetter String?
+  processed Boolean @default(false)
+  processedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubscriptionTypes {
+  id        String      @default(uuid()) @id
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  subscriptions Subscription[]
+}
+
+model  Subscription {
+  id        String      @default(uuid()) @id
+  userId  String @unique
+  user      User        @relation(fields: [userId], references: [id])
+  subscriptionType      SubscriptionTypes        @relation(fields: [subscriptionTypeId], references: [id])
+  subscriptionTypeId    String
+  subscriptionPayments SubscriptionPayments[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubscriptionPayments {
+  id        String      @default(uuid()) @id
+  subscription      Subscription        @relation(fields: [subscriptionId], references: [id])
+  subscriptionId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobSource {
+  id        String      @default(uuid()) @id
+  name      String?
+  url       String?
+  implementation String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs      Job[]
+}
