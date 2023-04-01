@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { WebScraper } from './web-scraper.interface';
@@ -10,7 +11,7 @@ export class WebScraperService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const scrapingSources = await this.prisma.jobSource.findMany();
-    scrapingSources.forEach((source) => {});
+    scrapingSources.forEach((source: any) => {});
   }
 
   async getScraper(sourceKey: string): Promise<WebScraper> {

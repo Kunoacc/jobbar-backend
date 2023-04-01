@@ -1,7 +1,9 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github';
 import { AuthService } from '../auth.service';
-
+import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
+@Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   constructor(private authService: AuthService) {
     super({
@@ -12,17 +14,10 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-    done: any,
-  ) {
+  async validate(...args: any[]) {
+    const [accessToken, refreshToken, profile, done] = args;
     try {
-      const jwt: string = await this.authService.validateUser(profile);
-      const user = {
-        jwt,
-      };
+      const user = await this.authService.validateUser(profile);
       done(null, user);
     } catch (err) {
       done(err, false);
