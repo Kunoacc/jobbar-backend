@@ -7,6 +7,7 @@ import { GoogleStrategy } from './strategies/google';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerService } from 'src/services/logger/logger.service';
+import { Jwt } from './guards/jwt/jwt';
 
 @Module({
   controllers: [AuthController],
@@ -23,6 +24,7 @@ import { LoggerService } from 'src/services/logger/logger.service';
     AppleStrategy,
     GoogleStrategy,
     LoggerService,
+    Jwt,
   ],
   exports: [AuthService],
 })
