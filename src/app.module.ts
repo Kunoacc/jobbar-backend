@@ -10,7 +10,13 @@ import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [WebScraperModule, UserModule, AuthModule, LoggerModule, ProfileModule],
+  imports: [
+    WebScraperModule,
+    UserModule,
+    AuthModule,
+    LoggerModule,
+    ProfileModule,
+  ],
   controllers: [AppController, ProfileController],
   providers: [AppService, ProfileService],
 })
