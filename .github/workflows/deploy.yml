@@ -36,7 +36,6 @@ jobs:
         chmod 600 private_key.pem
         echo "Host *" > ~/.ssh/config
         echo "  AddKeysToAgent yes" >> ~/.ssh/config
-        echo "  UseKeychain no" >> ~/.ssh/config
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
         ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
