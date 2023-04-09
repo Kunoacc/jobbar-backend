@@ -35,7 +35,7 @@ jobs:
         echo "  UseKeychain no" >> ~/.ssh/config
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
-        ssh-keyscan your_droplet_ip >> ~/.ssh/known_hosts
+        ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
         ssh-agent -a $SSH_AUTH_SOCK
         ssh-add -k "$(pwd)/private_key.pem"
 
