@@ -25,9 +25,12 @@ jobs:
     - name: Set up SSH
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       run: |
         mkdir ~/.ssh
         touch ~/.ssh/config
+        mkdir -p /tmp/ssh_agent
+        eval "$(ssh-agent -s -a /tmp/ssh_agent.sock)"
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         echo "Host *" > ~/.ssh/config
