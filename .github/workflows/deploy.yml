@@ -84,13 +84,17 @@ jobs:
         ssh root@68.183.74.216 "mkdir -p $DEPLOY_PATH/config && echo \"$ENV_CONTENT\" > $DEPLOY_PATH/config/.$(echo $BRANCH_NAME | tr '[:upper:]' '[:lower:]').env"
 
     - name: Restart Service
+      env:
+        BRANCH_NAME: ${{ github.ref_name }}
       run: |
         if [ "$BRANCH_NAME" = "main" ]; then
           DEPLOY_PATH="~/gripApp"
-          ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && npm run start:prod && pm2 restart app"
+          PROCESS_NAME="gripApp"
         elif [ "$BRANCH_NAME" = "dev" ]; then
           DEPLOY_PATH="~/gripAppStaging"
-          ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && npm run start:staging && pm2 restart app"
+          PROCESS_NAME="gripAppStaging"
         else
           exit 1
         fi
+
+        ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && (pm2 delete $PROCESS_NAME || true) && pm2 start npm --name $PROCESS_NAME -- run start:$(echo $BRANCH_NAME | tr '[:upper:]' '[:lower:]')"
