@@ -24,6 +24,9 @@ jobs:
 
     - name: Create environment file
       run: |
+        mkdir config
+        touch config/production.env
+        touch config/staging.env
         if [ "${{ github.ref }}" == "refs/heads/main" ]; then
           echo "NODE_ENV=production" >> ./config/production.env
           echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" >> ./config/production.env
