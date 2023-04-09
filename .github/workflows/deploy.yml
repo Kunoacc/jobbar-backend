@@ -38,6 +38,8 @@ jobs:
         echo "  AddKeysToAgent yes" >> ~/.ssh/config
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+        echo "  PubkeyAuthentication yes" >> ~/.ssh/config
+        echo "  PasswordAuthentication no" >> ~/.ssh/config
         ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
         echo "$PASSPHRASE" | ssh-add "$(pwd)/private_key.pem"
 
