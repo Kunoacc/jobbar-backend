@@ -25,6 +25,7 @@ jobs:
     - name: Set up SSH
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        PASSPHRASE: ${{ secrets.SSH_PRIVATE_KEY_PASSPHRASE }}
       run: |
         mkdir ~/.ssh
         touch ~/.ssh/config
@@ -39,7 +40,7 @@ jobs:
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
         ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
-        ssh-add -k "$(pwd)/private_key.pem"
+        echo "$PASSPHRASE" | ssh-add -k "$(pwd)/private_key.pem" --stdin
 
     - name: Deploy to Digital Ocean Droplet
       env:
