@@ -22,49 +22,12 @@ jobs:
     # - name: Install dependencies
     #   run: npm ci
 
-    - name: Create environment file
-      run: |
-        mkdir config
-        touch config/production.env
-        touch config/staging.env
-        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-          echo "NODE_ENV=production" >> ./config/production.env
-          echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" >> ./config/production.env
-          echo "OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}" >> ./config/production.env
-          echo "OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}" >> ./config/production.env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.PRODUCTION_GOOGLE_CLIENT_ID }}" >> ./config/production.env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.PRODUCTION_GOOGLE_CLIENT_SECRET }}" >> ./config/production.env
-          echo "GOOGLE_REDIRECT_URL=${{ secrets.PRODUCTION_GOOGLE_REDIRECT_URL }}" >> ./config/production.env
-          echo "GITHUB_CLIENT_ID=${{ secrets.PRODUCTION_GITHUB_CLIENT_ID }}" >> ./config/production.env
-          echo "GITHUB_CLIENT_SECRET=${{ secrets.PRODUCTION_GITHUB_CLIENT_SECRET }}" >> ./config/production.env
-          echo "GITHUB_REDIRECT_URL=${{ secrets.PRODUCTION_GITHUB_REDIRECT_URL }}" >> ./config/production.env
-          echo "JWT_SECRET=${{ secrets.PRODUCTION_JWT_SECRET }}" >> ./config/production.env
-          echo "FRONTEND_URL=${{ secrets.PRODUCTION_FRONTEND_URL }}" >> ./config/production.env
-          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}" >> ./config/production.env
-          echo "CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}" >> ./config/production.env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}" >> ./config/production.env
-        else
-          echo "NODE_ENV=staging" >> ./config/staging.env
-          echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URI }}" >> ./config/production.env
-          echo "OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}" >> ./config/production.env
-          echo "OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}" >> ./config/production.env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.PRODUCTION_GOOGLE_CLIENT_ID }}" >> ./config/production.env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.PRODUCTION_GOOGLE_CLIENT_SECRET }}" >> ./config/production.env
-          echo "GOOGLE_REDIRECT_URL=${{ secrets.PRODUCTION_GOOGLE_REDIRECT_URL }}" >> ./config/production.env
-          echo "GITHUB_CLIENT_ID=${{ secrets.PRODUCTION_GITHUB_CLIENT_ID }}" >> ./config/production.env
-          echo "GITHUB_CLIENT_SECRET=${{ secrets.PRODUCTION_GITHUB_CLIENT_SECRET }}" >> ./config/production.env
-          echo "GITHUB_REDIRECT_URL=${{ secrets.PRODUCTION_GITHUB_REDIRECT_URL }}" >> ./config/production.env
-          echo "JWT_SECRET=${{ secrets.PRODUCTION_JWT_SECRET }}" >> ./config/production.env
-          echo "FRONTEND_URL=${{ secrets.PRODUCTION_FRONTEND_URL }}" >> ./config/production.env
-          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}" >> ./config/production.env
-          echo "CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}" >> ./config/production.env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}" >> ./config/production.env
-        fi
-
     - name: Set up SSH
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
+        mkdir ~/.ssh
+        touch ~/.ssh/config
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         echo "Host *" > ~/.ssh/config
@@ -88,4 +51,55 @@ jobs:
           exit 1
         fi
         rsync -avzr --delete --exclude '.git' --exclude '.github' --exclude 'node_modules' . root@68.183.74.216:$DEPLOY_PATH
-        ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && pm2 restart app"
+
+    - name: Create Env Files
+      run: |
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          mkdir ~/gripApp/config
+          touch ~/gripApp/config/production.env
+          echo "NODE_ENV=production" >> ./config/production.env
+          echo "DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URL }}" >> ./config/production.env
+          echo "OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}" >> ./config/production.env
+          echo "OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}" >> ./config/production.env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.PRODUCTION_GOOGLE_CLIENT_ID }}" >> ./config/production.env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.PRODUCTION_GOOGLE_CLIENT_SECRET }}" >> ./config/production.env
+          echo "GOOGLE_REDIRECT_URL=${{ secrets.PRODUCTION_GOOGLE_REDIRECT_URL }}" >> ./config/production.env
+          echo "GITHUB_CLIENT_ID=${{ secrets.PRODUCTION_GITHUB_CLIENT_ID }}" >> ./config/production.env
+          echo "GITHUB_CLIENT_SECRET=${{ secrets.PRODUCTION_GITHUB_CLIENT_SECRET }}" >> ./config/production.env
+          echo "GITHUB_REDIRECT_URL=${{ secrets.PRODUCTION_GITHUB_REDIRECT_URL }}" >> ./config/production.env
+          echo "JWT_SECRET=${{ secrets.PRODUCTION_JWT_SECRET }}" >> ./config/production.env
+          echo "FRONTEND_URL=${{ secrets.PRODUCTION_FRONTEND_URL }}" >> ./config/production.env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}" >> ./config/production.env
+          echo "CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}" >> ./config/production.env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}" >> ./config/production.env
+        else
+          mkdir ~/gripAppStaging/config
+          touch ~/gripAppStaging/config/staging.env
+          echo "NODE_ENV=staging" >> ./config/staging.env
+          echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URI }}" >> ./config/staging.env
+          echo "OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}" >> ./config/staging.env
+          echo "OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}" >> ./config/staging.env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.PRODUCTION_GOOGLE_CLIENT_ID }}" >> ./config/staging.env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.PRODUCTION_GOOGLE_CLIENT_SECRET }}" >> ./config/staging.env
+          echo "GOOGLE_REDIRECT_URL=${{ secrets.PRODUCTION_GOOGLE_REDIRECT_URL }}" >> ./config/staging.env
+          echo "GITHUB_CLIENT_ID=${{ secrets.PRODUCTION_GITHUB_CLIENT_ID }}" >> ./config/staging.env
+          echo "GITHUB_CLIENT_SECRET=${{ secrets.PRODUCTION_GITHUB_CLIENT_SECRET }}" >> ./config/staging.env
+          echo "GITHUB_REDIRECT_URL=${{ secrets.PRODUCTION_GITHUB_REDIRECT_URL }}" >> ./config/staging.env
+          echo "JWT_SECRET=${{ secrets.PRODUCTION_JWT_SECRET }}" >> ./config/staging.env
+          echo "FRONTEND_URL=${{ secrets.PRODUCTION_FRONTEND_URL }}" >> ./config/staging.env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}" >> ./config/staging.env
+          echo "CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}" >> ./config/staging.env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}" >> ./config/staging.env
+        fi
+
+    - name: Restart Service
+      run: |
+        if [ "$BRANCH_NAME" = "main" ]; then
+          DEPLOY_PATH="~/gripApp"
+          ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && npm run start:prod && pm2 restart app"
+        elif [ "$BRANCH_NAME" = "dev" ]; then
+          DEPLOY_PATH="~/gripAppStaging"
+          ssh root@68.183.74.216 "cd $DEPLOY_PATH && npm install && npm run build && npm run start:staging && pm2 restart app"
+        else
+          exit 1
+        fi
