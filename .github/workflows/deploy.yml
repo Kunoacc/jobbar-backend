@@ -25,11 +25,11 @@ jobs:
     - name: Set up SSH
       env:
         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
       run: |
         mkdir ~/.ssh
         touch ~/.ssh/config
-        export SSH_AUTH_SOCK=$(mktemp -u /tmp/ssh_agent.XXXXXX.sock)
+        SSH_AUTH_SOCK=$(mktemp -u /tmp/ssh_agent.XXXXXX.sock)
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
@@ -39,7 +39,6 @@ jobs:
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
         ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
-        ssh-agent -a $SSH_AUTH_SOCK
         ssh-add -k "$(pwd)/private_key.pem"
 
     - name: Deploy to Digital Ocean Droplet
