@@ -40,7 +40,7 @@ jobs:
         echo "  IdentityFile $(pwd)/private_key.pem" >> ~/.ssh/config
         echo "  StrictHostKeyChecking no" >> ~/.ssh/config
         ssh-keyscan 68.183.74.216 >> ~/.ssh/known_hosts
-        echo "$PASSPHRASE" | ssh-add -k "$(pwd)/private_key.pem" --stdin
+        echo "$PASSPHRASE" | ssh-add "$(pwd)/private_key.pem"
 
     - name: Deploy to Digital Ocean Droplet
       env:
