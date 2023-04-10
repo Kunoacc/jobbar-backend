@@ -11,6 +11,7 @@ import { ProfileController } from './profile/profile.controller';
 import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
 import { CloudinaryService } from './services/cloudinary/cloudinary.service';
+import { PrismaService } from './services/prisma/prisma.service';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { CloudinaryService } from './services/cloudinary/cloudinary.service';
     ConfigModule.forRoot(),
   ],
   controllers: [AppController, ProfileController],
-  providers: [AppService, ProfileService, CloudinaryService],
+  providers: [AppService, ProfileService, CloudinaryService, PrismaService],
 })
 export class AppModule {}
