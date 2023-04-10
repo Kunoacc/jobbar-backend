@@ -100,6 +100,7 @@ jobs:
         fi
 
         ssh root@68.183.74.216 "\
+        source ~/.nvm/nvm.sh &&
         nvm use 18 && \
         cd $DEPLOY_PATH && \
         rm -rf node_modules && \
