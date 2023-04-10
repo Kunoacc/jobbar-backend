@@ -59,16 +59,18 @@ jobs:
           DEPLOY_PATH="~/gripApp"
           DB_URL="${{ secrets.PRODUCTION_DATABASE_URL }}"
           PORT=${{ secrets.PRODUCTION_PORT }}
+          ENV=production
         elif [ "$BRANCH_NAME" = "dev" ]; then
           DEPLOY_PATH="~/gripAppStaging"
           DB_URL="${{ secrets.STAGING_DATABASE_URI }}"
           PORT=${{ secrets.STAGING_PORT }}
+          ENV=staging
         else
           exit 1
         fi
 
-        ENV_CONTENT="NODE_ENV=$(echo $BRANCH_NAME | tr '[:lower:]' '[:upper:]')
-        DATABASE_URL=$DATABASE_URL
+        ENV_CONTENT="NODE_ENV=$ENV
+        DATABASE_URL=$DB_URL
         PORT=$PORT
         OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}
         OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}
@@ -81,8 +83,8 @@ jobs:
         JWT_SECRET=${{ secrets.PRODUCTION_JWT_SECRET }}
         FRONTEND_URL=${{ secrets.PRODUCTION_FRONTEND_URL }}
         CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}
-        CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}
-        CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}"
+        CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY}}
+        CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}"
         ssh root@68.183.74.216 "echo \"$ENV_CONTENT\" > $DEPLOY_PATH/.env"
 
     - name: Restart Service
