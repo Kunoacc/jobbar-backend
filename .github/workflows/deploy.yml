@@ -83,7 +83,7 @@ jobs:
         CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}
         CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}
         CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}"
-        ssh root@68.183.74.216 "mkdir -p $DEPLOY_PATH/config && echo \"$ENV_CONTENT\" > $DEPLOY_PATH/config/.env"
+        ssh root@68.183.74.216 "echo \"$ENV_CONTENT\" > $DEPLOY_PATH/.env"
 
     - name: Restart Service
       env:
@@ -99,4 +99,13 @@ jobs:
           exit 1
         fi
 
-        ssh root@68.183.74.216 "cd $DEPLOY_PATH && rm -rf node_modules && (pnpm --version || npm install -g pnpm) && pnpm install && npx prisma migrate deploy && pnpm run build && (pm2 delete $PROCESS_NAME || true) && pm2 start pnpm --name $PROCESS_NAME -- run start:$(echo $BRANCH_NAME | tr '[:upper:]' '[:lower:]')"
+        ssh root@68.183.74.216 "\
+        nvm use 18 && \
+        cd $DEPLOY_PATH && \
+        rm -rf node_modules && \
+        (pnpm --version || npm install -g pnpm) && \
+        pnpm install && \
+        npx prisma migrate deploy && \
+        pnpm run build && \
+        (pm2 delete $PROCESS_NAME || true) && \
+        pm2 start pnpm --name $PROCESS_NAME -- run start:$(echo $BRANCH_NAME | tr '[:upper:]' '[:lower:]')"
