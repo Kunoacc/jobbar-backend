@@ -12,12 +12,6 @@ import { ProfileService } from './profile/profile.service';
 import { ProfileModule } from './profile/profile.module';
 import { CloudinaryService } from './services/cloudinary/cloudinary.service';
 
-const environments = {
-  development: '.env',
-  production: 'config/.production.env',
-  staging: 'config/.staging.env',
-};
-
 @Module({
   imports: [
     WebScraperModule,
@@ -25,9 +19,7 @@ const environments = {
     AuthModule,
     LoggerModule,
     ProfileModule,
-    ConfigModule.forRoot({
-      envFilePath: environments[process.env.NODE_ENV],
-    }),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController, ProfileController],
   providers: [AppService, ProfileService, CloudinaryService],

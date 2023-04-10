@@ -57,14 +57,19 @@ jobs:
       run: |
         if [ "$BRANCH_NAME" = "main" ]; then
           DEPLOY_PATH="~/gripApp"
+          DB_URL="${{ secrets.PRODUCTION_DATABASE_URL }}"
+          PORT=${{ secrets.PRODUCTION_PORT }}
         elif [ "$BRANCH_NAME" = "dev" ]; then
           DEPLOY_PATH="~/gripAppStaging"
+          DB_URL="${{ secrets.STAGING_DATABASE_URI }}"
+          PORT=${{ secrets.STAGING_PORT }}
         else
           exit 1
         fi
 
         ENV_CONTENT="NODE_ENV=$(echo $BRANCH_NAME | tr '[:lower:]' '[:upper:]')
-        DATABASE_URL=${{ secrets.PRODUCTION_DATABASE_URI }}
+        DATABASE_URL=$DATABASE_URL
+        PORT=$PORT
         OPEN_AI_KEY=${{ secrets.PRODUCTION_OPEN_AI_KEY }}
         OPEN_AI_ORG=${{ secrets.PRODUCTION_OPEN_AI_ORG }}
         GOOGLE_CLIENT_ID=${{ secrets.PRODUCTION_GOOGLE_CLIENT_ID }}
@@ -78,7 +83,7 @@ jobs:
         CLOUDINARY_CLOUD_NAME=${{ secrets.PRODUCTION_CLOUDINARY_CLOUD_NAME }}
         CLOUDINARY_API_KEY=${{ secrets.PRODUCTION_CLOUDINARY_API_KEY }}
         CLOUDINARY_API_SECRET=${{ secrets.PRODUCTION_CLOUDINARY_API_SECRET }}"
-        ssh root@68.183.74.216 "mkdir -p $DEPLOY_PATH/config && echo \"$ENV_CONTENT\" > $DEPLOY_PATH/config/.$(echo $BRANCH_NAME | tr '[:upper:]' '[:lower:]').env"
+        ssh root@68.183.74.216 "mkdir -p $DEPLOY_PATH/config && echo \"$ENV_CONTENT\" > $DEPLOY_PATH/config/.env"
 
     - name: Restart Service
       env:
