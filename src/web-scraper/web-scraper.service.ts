@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import {
-  INestApplicationContext,
   Injectable,
-  OnModuleInit,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { WebScraper } from './web-scraper.interface';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from 'src/app.module';
+import { ModuleRef } from '@nestjs/core';
 import { JobSource, Prisma } from '@prisma/client';
 
 type Scraper = {
@@ -16,18 +14,17 @@ type Scraper = {
 };
 
 @Injectable()
-export class WebScraperService implements OnModuleInit {
+export class WebScraperService {
   private scrapers: Map<string, Scraper> = new Map();
-  private app: INestApplicationContext;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly moduleref: ModuleRef) {}
 
-  async onModuleInit(): Promise<void> {
-    this.app = await NestFactory.createApplicationContext(AppModule);
+  async onApplicationBootstrap(): Promise<void> {
     const scrapingSources = await this.prisma.jobSource.findMany();
     scrapingSources.forEach((source) => {
+      const scraperImplementation = this.moduleref.get(source.implementation, { strict: false });
       this.scrapers.set(source.implementation, {
-        scraper: this.app.get(source.implementation),
+        scraper: scraperImplementation.get(source.implementation),
         source,
       });
     });

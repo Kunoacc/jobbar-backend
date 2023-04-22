@@ -4,21 +4,21 @@ import { PrismaService } from 'src/services/prisma/prisma.service';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  // constructor(private prisma: PrismaService) {}
 
-  async createProfile(data: Prisma.ProfileCreateInput) {
-    return this.prisma.profile.create({ data });
-  }
+  // async createProfile(data: Prisma.ProfileCreateInput) {
+  //   return this.prisma.profile.create({ data });
+  // }
 
-  async getProfile(where: Prisma.ProfileWhereUniqueInput) {
-    return this.prisma.profile.findUnique({ where });
-  }
+  // async getProfile(where: Prisma.ProfileWhereUniqueInput) {
+  //   return this.prisma.profile.findUnique({ where });
+  // }
 
-  async updateProfile(userId: string, data: Prisma.ProfileUpdateInput) {
-    return this.prisma.profile.update({ data, where: { userId } });
-  }
+  // async updateProfile(userId: string, data: Prisma.ProfileUpdateInput) {
+  //   return this.prisma.profile.update({ data, where: { userId } });
+  // }
 
-  async deleteProfile(where: Prisma.ProfileWhereUniqueInput) {
-    return this.prisma.profile.delete({ where });
-  }
+  // async deleteProfile(where: Prisma.ProfileWhereUniqueInput) {
+  //   return this.prisma.profile.delete({ where });
+  // }
 }
