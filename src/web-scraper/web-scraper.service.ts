@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import {
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { PrismaService } from 'src/services/prisma/prisma.service';
 import { WebScraper } from './web-scraper.interface';
 import { ModuleRef } from '@nestjs/core';
@@ -17,12 +14,17 @@ type Scraper = {
 export class WebScraperService {
   private scrapers: Map<string, Scraper> = new Map();
 
-  constructor(private readonly prisma: PrismaService, private readonly moduleref: ModuleRef) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly moduleref: ModuleRef,
+  ) {}
 
   async onApplicationBootstrap(): Promise<void> {
     const scrapingSources = await this.prisma.jobSource.findMany();
     scrapingSources.forEach((source) => {
-      const scraperImplementation = this.moduleref.get(source.implementation, { strict: false });
+      const scraperImplementation = this.moduleref.get(source.implementation, {
+        strict: false,
+      });
       this.scrapers.set(source.implementation, {
         scraper: scraperImplementation.get(source.implementation),
         source,
@@ -65,5 +67,28 @@ export class WebScraperService {
       throw new Error(`No scraper found for source url ${url}`);
     }
     return await scraper.apply(url, user);
+  }
+
+  async getLastJobTimestamp(sourceKey: string): Promise<any> {
+    try {
+      const lastJob = await this.prisma.job.findFirst({
+        where: {
+          source: {
+            implementation: sourceKey,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          source: true,
+        },
+      });
+
+      return lastJob ? lastJob.createdAt : 0;
+    } catch (error) {
+      console.log(error);
+      return 0;
+    }
   }
 }

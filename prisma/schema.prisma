@@ -103,6 +103,7 @@ model Job {
   location  String?
   salary    String?
   url       String?
+  applyLogicHandler String?
   sourceId  String @unique
   source JobSource @relation(fields: [sourceId], references: [id])
   company Company @relation(fields: [companyId], references: [id])
